@@ -59,6 +59,13 @@ An outline broken into three groups, 1) planned additions, 2) current issues, 3)
 
 ### SonarQube
 
+Sonar lint , connect to
+    "sonarlint.connectedMode.connections.sonarqube": [
+          {
+            "serverUrl": "https://localhost:9000",
+            "token": ""
+          }
+    ]
 `docker pull sonarqube:9.0.1-developer`
 
 ### Docker 
