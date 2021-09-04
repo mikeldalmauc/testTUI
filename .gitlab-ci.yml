@@ -40,7 +40,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script: 
-    - mvn sonar:sonar -D"sonar.projectKey=pruebaTUI" -D"sonar.host.url=http://835f-62-99-26-193.ngrok.io" -D"sonar.login=6a59b0f5237de142bf65109fc3ade1fd9bf42ef6"
+    - mvn sonar:sonar -D"sonar.projectKey=pruebaTUI" -D"sonar.host.url=http://835f-62-99-26-193.ngrok.io" -D"sonar.login=6a59b0f5237de142bf65109fc3ade1fd9bf42ef6"  -D"sonar.java.binaries=\'target/classes\'"
   allow_failure: true
   only:
     - master # or the name of your main branch

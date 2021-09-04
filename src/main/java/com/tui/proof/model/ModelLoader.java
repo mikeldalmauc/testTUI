@@ -84,8 +84,10 @@ public class ModelLoader implements ApplicationRunner {
 
         clientRepo.saveAll(data.getLeft());
         log.info(data.getLeft().size() + " clients created");
+
         addressRepo.saveAll(data.getMiddle());
         log.info(data.getMiddle().size() + " address created");
+        
         poRepo.saveAll(data.getRight());
         log.info(data.getRight().size() + " purchase orders created");
     }
