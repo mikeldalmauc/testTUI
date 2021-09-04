@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.2.RELEASE</version>
+		<version>2.3.7.RELEASE</version>
 	</parent>
 	<groupId>com.tui</groupId>
 	<artifactId>backend-technical-test</artifactId>
@@ -15,7 +15,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<springdoc-openapi-ui.version>1.5.9</springdoc-openapi-ui.version>
+		<springdoc-openapi-ui.version>1.5.10</springdoc-openapi-ui.version>
 		<spring-data-jpa.version>2.5.4</spring-data-jpa.version>
 		<sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
 		<fully.qualified.main.class>com.tui.proof.MainApplication</fully.qualified.main.class>
@@ -25,6 +25,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<version>2.5.0</version>
 		</dependency>
 
 		<dependency>
