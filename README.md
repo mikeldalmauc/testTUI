@@ -36,6 +36,8 @@ Initial Data can be inspected though h2 console
 ### Setup
 A step by step outline from start to finish of what is needed to setup and operate a service, providing as much detail as you possibly for any new user to be able to get up and running with a service.
 
+spring.kafka.bootstrap-servers=172.30.128.1:9092
+
 ### Testing
 
 Testing - Providing details and instructions for mocking, monitoring, and testing a service, including any services or tools used, as well as links or reports that are part of active testing for a service.

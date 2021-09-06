@@ -11,13 +11,18 @@ import javax.persistence.Table;
 
 import com.github.javafaker.Faker;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Builder
 @Entity
 @Table
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address implements Serializable{
   
   @Id 
@@ -25,13 +30,13 @@ public class Address implements Serializable{
   @Column(name="address_id", unique = true, nullable = false)
   private Long id;
 
-  @Column(nullable=false)
+  @NonNull
   private String street;
-  @Column(nullable=false)
-  private String postcode;
-  @Column(nullable=false)
+  @NonNull
+  private String postCode;
+  @NonNull
   private String city;
-  @Column(nullable=false)
+  @NonNull
   private String country;
 
   public static Address fakeAddress(Faker faker){
@@ -39,7 +44,7 @@ public class Address implements Serializable{
     return Address.builder()
         .city(faker.address().city())
         .street(faker.address().streetAddress())
-        .postcode(faker.address().zipCode())
+        .postCode(faker.address().zipCode())
         .country(faker.address().country())
         .build();
   } 

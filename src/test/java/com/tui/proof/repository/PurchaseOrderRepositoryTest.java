@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PurchaseOrderRepositoryTest {
+class PurchaseOrderRepositoryTest {
 
     @Test
     @Tag("UnitTest")
-    public void dummyTest() {
+    void dummyTest() {
         Assertions.assertTrue(true);
     }
 }

@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 @Tags(value = { @Tag("UnitTest") })
-public class PurchaseOrderTest {
+class PurchaseOrderTest {
 
     private Client testClient;
     private Address testAdress;
     private PurchaseOrder testPurchaseOrder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         testClient = Client.fakeClient(new Faker());
         testAdress = Address.fakeAddress(new Faker());
@@ -26,22 +26,22 @@ public class PurchaseOrderTest {
     }
 
     @Test
-    public void validPilotes_5_Test() {
+    void validPilotes_5_Test() {
         Assertions.assertTrue(PurchaseOrder.validPilotes.test(5));
     }
 
     @Test
-    public void validPilotes_10_Test() {
+    void validPilotes_10_Test() {
         Assertions.assertTrue(PurchaseOrder.validPilotes.test(10));
     }
 
     @Test
-    public void validPilotes_15_Test() {
+    void validPilotes_15_Test() {
         Assertions.assertTrue(PurchaseOrder.validPilotes.test(15));
     }
 
     @Test
-    public void validPilotes_False_Test() {
+    void validPilotes_False_Test() {
         (new Random()).ints().limit(30).forEach(n -> {
             if (n != 5 && n != 10 && n != 15)
                 Assertions.assertFalse(PurchaseOrder.validPilotes.test(n));
@@ -49,27 +49,27 @@ public class PurchaseOrderTest {
     }
 
     @Test
-    public void fakePurchaseOrder_NonNull_Number_Test() {
+    void fakePurchaseOrder_NonNull_Number_Test() {
         Assertions.assertNotNull(testPurchaseOrder.getNumber());
     }
 
     @Test
-    public void fakePurchaseOrder_NonNull_Client_Test() {
+    void fakePurchaseOrder_NonNull_Client_Test() {
         Assertions.assertNotNull(testPurchaseOrder.getClient());
     }
 
     @Test
-    public void fakePurchaseOrder_NonNull_DeliveryAddress_Test() {
+    void fakePurchaseOrder_NonNull_DeliveryAddress_Test() {
         Assertions.assertNotNull(testPurchaseOrder.getDeliveryAddress());
     }
 
     @Test
-    public void fakePurchaseOrder_Valid_Pilotes_Test() {
+    void fakePurchaseOrder_Valid_Pilotes_Test() {
         Assertions.assertTrue(PurchaseOrder.validPilotes.test(testPurchaseOrder.getPilotes()));
     }
 
     @Test
-    public void fakePurchaseOrder_Valid_OrderTotal_Test() {
+    void fakePurchaseOrder_Valid_OrderTotal_Test() {
         Assertions.assertEquals(testPurchaseOrder.getPilotes() * PurchaseOrder.DEFAULT_PRICE,
                 testPurchaseOrder.getOrderTotal());
     }

@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.DefaultApplicationArguments;
 
 @Tags(value = @Tag("UnitTest"))
-public class ModelLoaderTest {
+class ModelLoaderTest {
 
     private Triple<List<Client>, List<Address>, List<PurchaseOrder>> data;
 
@@ -50,28 +50,28 @@ public class ModelLoaderTest {
     private ModelLoader modelLoader;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         data = ModelLoader.fakeData(5);
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void fakeData_Clients_Amount_Test() {
+    void fakeData_Clients_Amount_Test() {
         Assertions.assertEquals(5, data.getLeft().size());
     }
 
     @Test
-    public void fakeData_Address_Amount_Test() {
+    void fakeData_Address_Amount_Test() {
         Assertions.assertEquals(5, data.getMiddle().size());
     }
 
     @Test
-    public void fakeData_PurchaseOrders_Amount_Test() {
+    void fakeData_PurchaseOrders_Amount_Test() {
         Assertions.assertTrue(data.getRight().size() >= 5);
     }
 
     @Test
-    public void run_Test() throws Exception {
+    void run_Test() throws Exception {
 
         doAnswer(returnsFirstArg()).when(clientRepo).saveAll(anyIterable());
         doAnswer(returnsFirstArg()).when(addressRepo).saveAll(anyIterable());

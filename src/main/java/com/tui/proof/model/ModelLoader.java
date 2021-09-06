@@ -24,17 +24,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ModelLoader implements ApplicationRunner {
-
-
-	@Autowired
-	private AddressRepository addressRepo;
 	
-	@Autowired
-	private ClientRepository clientRepo;
+	@Autowired AddressRepository addressRepo;
+	
+	@Autowired ClientRepository clientRepo;
 
-	@Autowired
-	private PurchaseOrderRepository poRepo;
-
+	@Autowired PurchaseOrderRepository poRepo;
 
     /**
      * 
@@ -42,18 +37,19 @@ public class ModelLoader implements ApplicationRunner {
      * @return m clients, m addresses, a pareto distribution of orders for each client-address pair.
      */
     public static Triple<List<Client>, List<Address>, List<PurchaseOrder>> fakeData(int m){
-        		// Insert some fake data 
+        
+        // Insert some fake data 
 	    List<Client> clients = Stream.iterate(0, n -> n + 1)
-        .map(n -> new Faker())
-        .map(Client::fakeClient)
-        .limit(m)
-        .collect(Collectors.toList());
+            .map(n -> new Faker())
+            .map(Client::fakeClient)
+            .limit(m)
+            .collect(Collectors.toList());
 
         List<Address> addresses = Stream.iterate(0, n -> n + 1)
-        .map(n -> new Faker())
-        .map(Address::fakeAddress)
-        .limit(m)
-        .collect(Collectors.toList());
+            .map(n -> new Faker())
+            .map(Address::fakeAddress)
+            .limit(m)
+            .collect(Collectors.toList());
     
         /**
          * 1 order min
@@ -66,7 +62,8 @@ public class ModelLoader implements ApplicationRunner {
             .map(n -> {
                 int numberOfOrders = (int) floor(dist.sample());
                 return Stream.iterate(0, i -> i + 1)
-                    .map(i -> PurchaseOrder.fakePurchaseOrder(clients.get(n), addresses.get(n)))
+                    .map(i -> PurchaseOrder
+                    .fakePurchaseOrder(clients.get(n), addresses.get(n)))
                     .limit(numberOfOrders);
             })
             .limit(m)
@@ -87,7 +84,7 @@ public class ModelLoader implements ApplicationRunner {
 
         addressRepo.saveAll(data.getMiddle());
         log.info(data.getMiddle().size() + " address created");
-        
+
         poRepo.saveAll(data.getRight());
         log.info(data.getRight().size() + " purchase orders created");
     }

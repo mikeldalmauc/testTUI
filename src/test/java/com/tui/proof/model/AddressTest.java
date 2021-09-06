@@ -9,32 +9,32 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 @Tags(value = { @Tag("UnitTest") })
-public class AddressTest {
+ class AddressTest {
 
     private Address testAdress;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testAdress = Address.fakeAddress(new Faker());
     }
 
     @Test
-    public void fakeAddress_NonNull_City_Test() {
+    void fakeAddress_NonNull_City_Test() {
         Assertions.assertNotNull(testAdress.getCity());
     }
 
     @Test
-    public void fakeAddress_NonNull_Street_Test() {
+    void fakeAddress_NonNull_Street_Test() {
         Assertions.assertNotNull(testAdress.getStreet());
     }
 
     @Test
-    public void fakeAddress_NonNull_PostCode_Test() {
-        Assertions.assertNotNull(testAdress.getPostcode());
+    void fakeAddress_NonNull_PostCode_Test() {
+        Assertions.assertNotNull(testAdress.getPostCode());
     }
 
     @Test
-    public void fakeAddress_NonNull_Country_Test() {
+    void fakeAddress_NonNull_Country_Test() {
         Assertions.assertNotNull(testAdress.getCountry());
     }
 }

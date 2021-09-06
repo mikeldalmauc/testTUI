@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,38 +18,44 @@ import javax.persistence.Table;
 import com.github.javafaker.service.FakeValuesService;
 import com.github.javafaker.service.RandomService;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Builder
 @Entity
 @Table
 @Data
-public class PurchaseOrder implements Serializable{
+@NoArgsConstructor
+@AllArgsConstructor
+public class PurchaseOrder implements Serializable {
   
   public static final double DEFAULT_PRICE = 1.06;
-  public static final String ORDER_NUMBER_FORMAT = "[a-z1-9]{15}";
+  public static final String ORDER_NUMBER_FORMAT = "[1-9]{15}";
 
   @Id 
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name="purchase_order_id", unique = true, nullable = false)
   private Long id;
 
-  @Column(nullable=false)
   private String number;
-  @Column(nullable=false)
+  
   private int pilotes;
-  @Column(nullable=false)
+  
   private double pricePerPilote;
-  @Column(nullable=false)
+ 
   private double orderTotal;
   
   @ManyToOne(optional=false, fetch=FetchType.LAZY) 
   @JoinColumn(name="client_id", nullable=false, updatable=false)
+  @NonNull
   private Client client;
 
   @ManyToOne(optional=false, fetch=FetchType.LAZY) 
   @JoinColumn(name="address_id", nullable=false, updatable=false)
+  @NonNull
   private Address deliveryAddress;
 
   public static final IntPredicate validPilotes = n -> List.of(5,10,15).contains(n);

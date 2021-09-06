@@ -11,13 +11,18 @@ import javax.persistence.Table;
 
 import com.github.javafaker.Faker;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Builder
 @Entity
 @Table
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Client  implements Serializable{
 
   @Id
@@ -25,19 +30,22 @@ public class Client  implements Serializable{
   @Column(name="client_id", unique = true, nullable = false)
   private Long id;
 
-  @Column(nullable=false)
+  @NonNull
   private String firstName;
-  @Column(nullable=false)
+  @NonNull
   private String lastName;
-  @Column(nullable=false)
+  @NonNull
   private String telephone;
-  
+  @NonNull
+  private String email;
+
   public static Client fakeClient(Faker faker){
 
     return Client.builder()
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
         .telephone(faker.phoneNumber().cellPhone())
+        .email(faker.internet().emailAddress())
         .build();
   }
 }

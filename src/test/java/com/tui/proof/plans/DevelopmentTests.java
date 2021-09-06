@@ -10,13 +10,13 @@ import org.junit.platform.suite.api.SelectPackages;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
-@SelectPackages({"com.tui.proof.model","com.tui.proof.repository"})
-@IncludeTags({"UnitTest", "IntegrationTest"})
-public class DevelopmentTests {
-    
+@SelectPackages({ "com.tui.proof.model", "com.tui.proof.repository", "com.tui.proof.ws", "com.tui.proof.service" })
+@IncludeTags({ "UnitTest", "IntegrationTest" })
+class DevelopmentTests {
+
     @Test
     @Tag("UnitTest")
-    public void dummyTest() {
+    void dummyTest() {
         Assertions.assertTrue(true);
     }
 }
