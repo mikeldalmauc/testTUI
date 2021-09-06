@@ -100,8 +100,8 @@ class PuchaseOrderControllerTest {
     @Test
     void createPurchaseOrder_Invalid_Null_Pilotes_Test() throws Exception {
 
-        poJson = ((ObjectNode) poJson).set("pilotes", null);
-        mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
+        testPODto.setPilotes(null);
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isBadRequest());
     }
 
 
@@ -115,15 +115,15 @@ class PuchaseOrderControllerTest {
     @ParameterizedTest(name = "{index} => pilotes={0}")
     @MethodSource("invalidValueProvider")
     void createPurchaseOrder_Invalid_Pilotes_Test(int pilotes) throws Exception {
-        poJson = ((ObjectNode) poJson).put("pilotes", pilotes);
-        mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
+        testPODto.setPilotes(pilotes);
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {5, 10 ,15})
     void createPurchaseOrder_Valid_Pilotes_Test(int pilotes) throws Exception {
-        poJson = ((ObjectNode) poJson).put("pilotes", pilotes);
-        mockMvc.perform(createMockRequest(poJson)).andExpect(status().isOk());
+        testPODto.setPilotes(pilotes);
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isOk());
     }
 
     @ParameterizedTest
@@ -134,21 +134,20 @@ class PuchaseOrderControllerTest {
         "deliveryAddress"
     })
     void createPurchaseOrder_Invalid_Null_Values_Test(String field) throws Exception {
-
         poJson = ((ObjectNode) poJson).set(field, null);
         mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
     @CsvSource({
-        "client, firstName",
-        "client, lastName",
-        "client, telephone",
-        "client, email",
-        "deliveryAddress, street",
-        "deliveryAddress, postCode",
-        "deliveryAddress, city",
-        "deliveryAddress, country"
+          "client, firstName"
+        , "client, lastName"
+        , "client, telephone"
+        , "client, email"
+        , "deliveryAddress, street"
+        , "deliveryAddress, postCode"
+        , "deliveryAddress, city"
+        , "deliveryAddress, country"
     })
     void createPurchaseOrder_Invalid_Null_Nested_Values_Test(String field, String subField) throws Exception {
        
@@ -159,27 +158,25 @@ class PuchaseOrderControllerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "client, firstName",
-        "client, lastName",
-        "client, telephone",
-        "client, email",
-        "deliveryAddress, street",
-        "deliveryAddress, postCode",
-        "deliveryAddress, city",
-        "deliveryAddress, country"
+          "client, firstName"
+        , "client, lastName"
+        , "client, telephone"
+        , "client, email"
+        , "deliveryAddress, street"
+        , "deliveryAddress, postCode"
+        , "deliveryAddress, city"
+        , "deliveryAddress, country"
     })
     void createPurchaseOrder_Invalid_Blank_Nested_Values_Test(String field, String subField) throws Exception {
-       
         JsonNode node = ((ObjectNode) poJson.get(field)).put(subField, "");
         poJson = ((ObjectNode) poJson).set(field, node);
         mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
     }
     
 
-    @Test
-    void createPurchaseOrder_Valid_Client_Email_Test() throws Exception {
-
-      List<String> validEmails = Arrays.asList("email@example.com"
+    @ParameterizedTest
+    @CsvSource({
+          "email@example.com"
         , "firstname.lastname@example.com"
         , "email@subdomain.example.com"
         , "firstname+lastname@example.com"
@@ -196,41 +193,31 @@ class PuchaseOrderControllerTest {
         , "email@example.web"
         , "email@111.222.333.44444"
         , "あいうえお@example.com"
-        , "email@example");
-
-        for(String email:validEmails){
-            JsonNode client =((ObjectNode) poJson.get("client")).put("email", email);
-            poJson = ((ObjectNode) poJson).set("client", client);
-            mockMvc.perform(createMockRequest(poJson)).andExpect(status().isOk());
-        }
-        
+        , "email@example"
+    })
+    void createPurchaseOrder_Valid_Client_Email_Test(String validEmail) throws Exception {
+        testPODto.getClient().setEmail(validEmail);
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isOk());        
     }
 
-    @Test
-    void createPurchaseOrder_Invalid_Client_Email_Test() throws Exception {
-
-       List<String> inValidEmails = Arrays.asList(
-         "plainaddress"
-       , "#@%^%#$@#$@#.com"
-       , "@example.com"
-       , "Joe Smith <email@example.com>"
-       , "email.example.com"
-       , "email@example@example.com"
-       , ".email@example.com"
-       , "email.@example.com"
-       , "email..email@example.com"
-       , "email@example.com (Joe Smith)"
-       , "email@-example.com"
-
-       , "email@example..com"
-       , "Abc..123@example.com/*  */");
-
-        for(String email:inValidEmails){
-            JsonNode client =((ObjectNode) poJson.get("client")).put("email", email);
-            poJson = ((ObjectNode) poJson).set("client", client);
-           mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
-        }
-        
+    @ParameterizedTest
+    @CsvSource({
+          "plainaddress"
+        , "@example.com"
+        , "Joe Smith <email@example.com>"
+        , "email.example.com"
+        , "email@example@example.com"
+        , ".email@example.com"
+        , "email.@example.com"
+        , "email..email@example.com"
+        , "email@example.com (Joe Smith)"
+        , "email@-example.com"
+        , "email@example..com"
+        , "Abc..123@example.com/*  */"
+    })
+    void createPurchaseOrder_Invalid_Client_Email_Test(String invalidEmail) throws Exception {
+        testPODto.getClient().setEmail(invalidEmail);
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -251,14 +238,18 @@ class PuchaseOrderControllerTest {
             .andExpect(jsonPath("$.client.id", notNullValue()));
     }
 
-    private static MockHttpServletRequestBuilder createMockRequest(JsonNode payload) {
-        return jsonMockRequest("/orders/create", payload);
+    private MockHttpServletRequestBuilder createMockRequest(JsonNode payload) {
+        return jsonMockRequest("/orders/create", this.mapper.valueToTree(payload));
     }
 
-    private static MockHttpServletRequestBuilder updateMockRequest(JsonNode payload) {
-        return jsonMockRequest("/orders/update", payload);
+    private MockHttpServletRequestBuilder createMockRequest(Object payload) {
+        return jsonMockRequest("/orders/create", this.mapper.valueToTree(payload));
     }
 
+    
+    private MockHttpServletRequestBuilder updateMockRequest(Object payload) {
+        return jsonMockRequest("/orders/update", this.mapper.valueToTree(payload));
+    }
     private static MockHttpServletRequestBuilder jsonMockRequest(String endpoint, JsonNode payload) {
         return MockMvcRequestBuilders.post(endpoint).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(payload.toString());
