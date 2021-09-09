@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.IntPredicate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Builder
 @Entity
@@ -40,6 +40,7 @@ public class PurchaseOrder implements Serializable {
   @Column(name="purchase_order_id", unique = true, nullable = false)
   private Long id;
 
+  @Column(unique=true, nullable = false)
   private String number;
   
   private int pilotes;
@@ -48,17 +49,19 @@ public class PurchaseOrder implements Serializable {
  
   private double orderTotal;
   
-  @ManyToOne(optional=false, fetch=FetchType.LAZY) 
-  @JoinColumn(name="client_id", nullable=false, updatable=false)
-  @NonNull
+  @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE}) 
+  @JoinColumn(nullable=false)
   private Client client;
 
-  @ManyToOne(optional=false, fetch=FetchType.LAZY) 
-  @JoinColumn(name="address_id", nullable=false, updatable=false)
-  @NonNull
+  @ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.MERGE}) 
+  @JoinColumn(nullable=false)
   private Address deliveryAddress;
 
   public static final IntPredicate validPilotes = n -> List.of(5,10,15).contains(n);
+
+  public static PurchaseOrder fakePurchaseOrder(){
+    return fakePurchaseOrder(Client.fakeClient(), Address.fakeAddress());
+  }
 
   public static PurchaseOrder fakePurchaseOrder(Client client, Address address){
 

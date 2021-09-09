@@ -1,25 +1,29 @@
 package com.tui.proof.ws;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.tui.proof.configuration.WebSecurityConfig;
 import com.tui.proof.dto.AddressDto;
 import com.tui.proof.dto.ClientDto;
 import com.tui.proof.dto.PurchaseOrderDto;
-import com.tui.proof.service.OrderNumberService;
+import com.tui.proof.model.Address;
+import com.tui.proof.model.Client;
+import com.tui.proof.model.PurchaseOrder;
+import com.tui.proof.service.PurchaseOrderService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,16 +37,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @Tags(value = { @Tag("UnitTest"), @Tag("ControllerTest") })
-// @ContextConfiguration(classes = {PurchaseOrderDto.class,
-// PilotesAmountValidator.class}, loader = AnnotationConfigContextLoader.class)
 @WebMvcTest(PurchaseOrderController.class)
+@Import(WebSecurityConfig.class)
 class PuchaseOrderControllerTest {
 
     @Autowired
@@ -52,10 +56,8 @@ class PuchaseOrderControllerTest {
     ObjectMapper mapper;
 
     @MockBean
-    OrderNumberService orderNumberService;
+    PurchaseOrderService purchaseOrderService;
 
-    @MockBean
-    KafkaTemplate<String, String> kafkaTemplate;
 
     AddressDto addressDto;
     ClientDto clientDto;
@@ -83,11 +85,14 @@ class PuchaseOrderControllerTest {
             .orderTotal(100.0)
             .deliveryAddress(addressDto)
             .client(clientDto).build();
-
+        
         addressJson = this.mapper.valueToTree(addressDto);
         clientJson = this.mapper.valueToTree(clientDto);
         poJson = this.mapper.valueToTree(testPODto);
 
+        
+        when(purchaseOrderService.create(any(PurchaseOrder.class))).then(returnsFirstArg());
+        when(purchaseOrderService.update(any(PurchaseOrder.class))).then(returnsFirstArg());
     }
 
     @Test
@@ -117,6 +122,7 @@ class PuchaseOrderControllerTest {
     void createPurchaseOrder_Invalid_Pilotes_Test(int pilotes) throws Exception {
         testPODto.setPilotes(pilotes);
         mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isBadRequest());
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
@@ -124,6 +130,8 @@ class PuchaseOrderControllerTest {
     void createPurchaseOrder_Valid_Pilotes_Test(int pilotes) throws Exception {
         testPODto.setPilotes(pilotes);
         mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isOk());
+        testPODto.setNumber("someNumber");
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isOk());
     }
 
     @ParameterizedTest
@@ -133,9 +141,11 @@ class PuchaseOrderControllerTest {
         "client",
         "deliveryAddress"
     })
-    void createPurchaseOrder_Invalid_Null_Values_Test(String field) throws Exception {
+    void createUpdatePurchaseOrder_Invalid_Null_Values_Test(String field) throws Exception {
         poJson = ((ObjectNode) poJson).set(field, null);
         mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
+        poJson = ((ObjectNode) poJson).put("number", "someNumber");
+        mockMvc.perform(updateMockRequest(poJson)).andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
@@ -149,11 +159,13 @@ class PuchaseOrderControllerTest {
         , "deliveryAddress, city"
         , "deliveryAddress, country"
     })
-    void createPurchaseOrder_Invalid_Null_Nested_Values_Test(String field, String subField) throws Exception {
+    void createUpdatePurchaseOrder_Invalid_Null_Nested_Values_Test(String field, String subField) throws Exception {
        
         JsonNode node = ((ObjectNode) poJson.get(field)).set(subField, null);
         poJson = ((ObjectNode) poJson).set(field, node);
         mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
+        poJson = ((ObjectNode) poJson).put("number", "someNumber");
+        mockMvc.perform(updateMockRequest(poJson)).andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
@@ -167,10 +179,12 @@ class PuchaseOrderControllerTest {
         , "deliveryAddress, city"
         , "deliveryAddress, country"
     })
-    void createPurchaseOrder_Invalid_Blank_Nested_Values_Test(String field, String subField) throws Exception {
+    void createUpdatePurchaseOrder_Invalid_Blank_Nested_Values_Test(String field, String subField) throws Exception {
         JsonNode node = ((ObjectNode) poJson.get(field)).put(subField, "");
         poJson = ((ObjectNode) poJson).set(field, node);
         mockMvc.perform(createMockRequest(poJson)).andExpect(status().isBadRequest());
+        poJson = ((ObjectNode) poJson).put("number", "someNumber");
+        mockMvc.perform(updateMockRequest(poJson)).andExpect(status().isBadRequest());
     }
     
 
@@ -195,9 +209,11 @@ class PuchaseOrderControllerTest {
         , "あいうえお@example.com"
         , "email@example"
     })
-    void createPurchaseOrder_Valid_Client_Email_Test(String validEmail) throws Exception {
+    void createUpdatePurchaseOrder_Valid_Client_Email_Test(String validEmail) throws Exception {
         testPODto.getClient().setEmail(validEmail);
-        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isOk());        
+        mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isOk());
+        testPODto.setNumber("someNumber");
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isOk());
     }
 
     @ParameterizedTest
@@ -215,43 +231,103 @@ class PuchaseOrderControllerTest {
         , "email@example..com"
         , "Abc..123@example.com/*  */"
     })
-    void createPurchaseOrder_Invalid_Client_Email_Test(String invalidEmail) throws Exception {
+    void createUpdatePurchaseOrder_Invalid_Client_Email_Test(String invalidEmail) throws Exception {
         testPODto.getClient().setEmail(invalidEmail);
         mockMvc.perform(createMockRequest(testPODto)).andExpect(status().isBadRequest());
+        testPODto.setNumber("someNumber");
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updatePurchaseOrder_Invalid_Id_Test() throws Exception {
+        
+        testPODto.setId(2133L);
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
+
+        testPODto.setNumber(null);
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
+
+        testPODto.setId(null);
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
+
+        testPODto.setNumber("");
+        mockMvc.perform(updateMockRequest(testPODto)).andExpect(status().isBadRequest());
     }
 
     @Test
     void createPurchaseOrder_Test() throws Exception {
 
-        when(orderNumberService.createOrderNumber()).thenReturn("34");
-
         mockMvc.perform(createMockRequest(poJson))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.*", hasSize(7)))
-            .andExpect(jsonPath("$.id", nullValue()))
-            .andExpect(jsonPath("$.number", is("34")))
-            .andExpect(jsonPath("$.pilotes", is(5)))
-            .andExpect(jsonPath("$.orderTotal", is(100.0)))
-            .andExpect(jsonPath("$.deliveryAddress.*", hasSize(5)))
-            .andExpect(jsonPath("$.deliveryAddress.id", notNullValue()))
-            .andExpect(jsonPath("$.client.*", hasSize (5)))
-            .andExpect(jsonPath("$.client.id", notNullValue()));
+            .andExpect(jsonPath("$.*", hasSize(7)));
+
+        verify(purchaseOrderService, times(1)).create(any(PurchaseOrder.class));
     }
 
-    private MockHttpServletRequestBuilder createMockRequest(JsonNode payload) {
-        return jsonMockRequest("/orders/create", this.mapper.valueToTree(payload));
-    }
-
-    private MockHttpServletRequestBuilder createMockRequest(Object payload) {
-        return jsonMockRequest("/orders/create", this.mapper.valueToTree(payload));
+    @Test
+    void updatePurchaseOrder_Test() throws Exception {
+        poJson = ((ObjectNode) poJson).put("number", "someNumber");
+        mockMvc.perform(updateMockRequest(poJson))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.*", hasSize(7)));
+        
+        verify(purchaseOrderService, times(1)).update(any(PurchaseOrder.class));
     }
 
     
-    private MockHttpServletRequestBuilder updateMockRequest(Object payload) {
-        return jsonMockRequest("/orders/update", this.mapper.valueToTree(payload));
+    @Test
+    @WithMockUser(username = "user", password = "user", roles = "USER")
+    void searchPurchaseOrder_role_user() throws Exception{
+    
+        mockMvc.perform(jsonGetMockRequest("/orders/search", clientDto))
+            .andExpect(status().isForbidden());
     }
-    private static MockHttpServletRequestBuilder jsonMockRequest(String endpoint, JsonNode payload) {
-        return MockMvcRequestBuilders.post(endpoint).contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON).content(payload.toString());
+
+    @Test
+    @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
+    void searchPurchaseOrder_role_admin() throws Exception{
+
+        List<PurchaseOrder> response = List.of(
+            PurchaseOrder.fakePurchaseOrder(Client.fakeClient()
+            , Address.fakeAddress()),
+            PurchaseOrder.fakePurchaseOrder(Client.fakeClient()
+            , Address.fakeAddress()));
+
+        when(purchaseOrderService.search(any(Client.class))).thenReturn(response);
+
+        mockMvc.perform(jsonGetMockRequest("/orders/search", clientDto))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)));
+
+        verify(purchaseOrderService, times(1)).search(any(Client.class));
+    }
+    
+    private MockHttpServletRequestBuilder createMockRequest(JsonNode payload) {
+        return jsonPostMockRequest("/orders/create", this.mapper.valueToTree(payload));
+    }
+
+    private MockHttpServletRequestBuilder createMockRequest(Object payload) {
+        return jsonPostMockRequest("/orders/create", this.mapper.valueToTree(payload));
+    }
+
+    private MockHttpServletRequestBuilder updateMockRequest(JsonNode payload) {
+        return jsonPostMockRequest("/orders/update", this.mapper.valueToTree(payload));
+    }
+    private MockHttpServletRequestBuilder updateMockRequest(Object payload) {
+        return jsonPostMockRequest("/orders/update", this.mapper.valueToTree(payload));
+    }
+    
+    private static MockHttpServletRequestBuilder jsonPostMockRequest(String endpoint, JsonNode payload) {
+        return MockMvcRequestBuilders.post(endpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(payload.toString());
+    }
+
+    private MockHttpServletRequestBuilder jsonGetMockRequest(String endpoint, Object payload) {
+        return MockMvcRequestBuilders.get(endpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(this.mapper.valueToTree(payload).toString());
     }
 }

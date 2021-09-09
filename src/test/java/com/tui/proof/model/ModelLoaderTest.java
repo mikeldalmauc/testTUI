@@ -1,91 +1,47 @@
 package com.tui.proof.model;
 
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.anyIterable;
-import static org.mockito.Mockito.doAnswer;
-
 import java.util.List;
 
 import com.tui.proof.repository.AddressRepository;
 import com.tui.proof.repository.ClientRepository;
 import com.tui.proof.repository.PurchaseOrderRepository;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@Tags(value = @Tag("UnitTest"))
+@SpringBootTest
 class ModelLoaderTest {
 
-    private Triple<List<Client>, List<Address>, List<PurchaseOrder>> data;
-
-    @Captor
-    ArgumentCaptor<List<Client>> clientCaptor;
-    @Captor
-    ArgumentCaptor<List<Address>> addressCaptor;
-    @Captor
-    ArgumentCaptor<List<PurchaseOrder>> purchaseOrderCaptor;
-
-    @Mock
+    @Autowired
+    private ClientRepository clientRepo;
+    
+    @Autowired
     private AddressRepository addressRepo;
 
-    @Mock
-    private ClientRepository clientRepo;
-
-    @Mock
+    @Autowired 
     private PurchaseOrderRepository poRepo;
 
-    @InjectMocks
-    private ModelLoader modelLoader;
+    private List<Client> clients;
 
-    @BeforeEach
-    void setUp() {
-        data = ModelLoader.fakeData(5);
-        MockitoAnnotations.initMocks(this);
-    }
+    private List<Address> addresses;
 
     @Test
-    void fakeData_Clients_Amount_Test() {
-        Assertions.assertEquals(5, data.getLeft().size());
-    }
-
-    @Test
-    void fakeData_Address_Amount_Test() {
-        Assertions.assertEquals(5, data.getMiddle().size());
-    }
-
-    @Test
+    @Tag("IntegrationTest")
     void fakeData_PurchaseOrders_Amount_Test() {
-        Assertions.assertTrue(data.getRight().size() >= 5);
+        clients = Client.fakeClients(5);
+        addresses = Address.fakeAddresses(5);
+        Assertions.assertTrue(ModelLoader.fakePurchaseOrders(clients, addresses).size() >= 5);
     }
 
     @Test
-    void run_Test() throws Exception {
+    @Tag("IntegrationTest")
+    void run_Test() {
 
-        doAnswer(returnsFirstArg()).when(clientRepo).saveAll(anyIterable());
-        doAnswer(returnsFirstArg()).when(addressRepo).saveAll(anyIterable());
-        doAnswer(returnsFirstArg()).when(poRepo).saveAll(anyIterable());
-
-        modelLoader.run(new DefaultApplicationArguments(new String[] {}));
-        InOrder inOrder = Mockito.inOrder(clientRepo, addressRepo, poRepo);
-
-        inOrder.verify(clientRepo).saveAll(clientCaptor.capture());
-        inOrder.verify(addressRepo).saveAll(addressCaptor.capture());
-        inOrder.verify(poRepo).saveAll(purchaseOrderCaptor.capture());
-
-        Assertions.assertEquals(200, clientCaptor.getValue().size());
-        Assertions.assertEquals(200, addressCaptor.getValue().size());
-        Assertions.assertTrue(200 <= purchaseOrderCaptor.getValue().size());
+        Assertions.assertTrue((long) ModelLoader.MODEL_SIZE <= poRepo.count());
+        Assertions.assertEquals((long) ModelLoader.MODEL_SIZE, addressRepo.count());
+        Assertions.assertEquals((long) ModelLoader.MODEL_SIZE, clientRepo.count());
     }
 }

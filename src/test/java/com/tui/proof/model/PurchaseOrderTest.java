@@ -2,8 +2,6 @@ package com.tui.proof.model;
 
 import java.util.Random;
 
-import com.github.javafaker.Faker;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -20,8 +18,8 @@ class PurchaseOrderTest {
     @BeforeEach
     void setUp() {
 
-        testClient = Client.fakeClient(new Faker());
-        testAdress = Address.fakeAddress(new Faker());
+        testClient = Client.fakeClient();
+        testAdress = Address.fakeAddress();
         testPurchaseOrder = PurchaseOrder.fakePurchaseOrder(testClient, testAdress);
     }
 

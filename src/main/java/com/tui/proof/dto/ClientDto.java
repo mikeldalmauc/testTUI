@@ -4,6 +4,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import com.github.javafaker.Faker;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +32,10 @@ public class ClientDto {
     @NotBlank(message = "Email Name is mandatory")
     @Email(message="Invalid email")
     private String email;
+
+    public static ClientDto fakeClient() {
+        Faker faker = new Faker();
+        return ClientDto.builder().firstName(faker.name().firstName()).lastName(faker.name().lastName())
+            .telephone(faker.phoneNumber().cellPhone()).email(faker.internet().emailAddress()).build();
+      }
 }

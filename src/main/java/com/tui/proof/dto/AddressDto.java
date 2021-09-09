@@ -2,6 +2,8 @@ package com.tui.proof.dto;
 
 import javax.validation.constraints.NotBlank;
 
+import com.github.javafaker.Faker;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +25,15 @@ public class AddressDto {
   private String city;
   @NotBlank(message = "Country is mandatory")
   private String country;
+
+  public static AddressDto fakeAddress(){
+      
+    Faker faker = new Faker();
+    return AddressDto.builder()
+        .city(faker.address().city())
+        .street(faker.address().streetAddress())
+        .postCode(faker.address().zipCode())
+        .country(faker.address().country())
+        .build();
+  } 
 }

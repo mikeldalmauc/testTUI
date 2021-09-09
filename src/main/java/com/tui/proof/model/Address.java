@@ -1,6 +1,9 @@
 package com.tui.proof.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,13 +42,22 @@ public class Address implements Serializable{
   @NonNull
   private String country;
 
-  public static Address fakeAddress(Faker faker){
+  public static Address fakeAddress(){
         
+    Faker faker = new Faker();
+
     return Address.builder()
         .city(faker.address().city())
         .street(faker.address().streetAddress())
         .postCode(faker.address().zipCode())
         .country(faker.address().country())
         .build();
+  } 
+  public static List<Address> fakeAddresses(int m){
+    
+    return Stream.iterate(0, n -> n + 1)
+        .map(n -> Address.fakeAddress())
+        .limit(m)
+        .collect(Collectors.toList());
   } 
 }

@@ -5,6 +5,7 @@ bin/
 gen/
 target/
 .sonar/
+client/
 
 ###############
 # Java class files

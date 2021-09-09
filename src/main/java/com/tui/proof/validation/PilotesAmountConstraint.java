@@ -9,10 +9,6 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-/**
-   * Example of custom validation tag,
-   * ideally this should be externalized 
-   */
   @Documented
   @Constraint(validatedBy = PilotesAmountValidator.class)
   @Target( { ElementType.METHOD, ElementType.FIELD })

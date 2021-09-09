@@ -1,7 +1,5 @@
 package com.tui.proof.model;
 
-import com.github.javafaker.Faker;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -9,13 +7,13 @@ import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 @Tags(value = { @Tag("UnitTest") })
- class AddressTest {
+class AddressTest {
 
     private Address testAdress;
 
     @BeforeEach
     void setUp() {
-        testAdress = Address.fakeAddress(new Faker());
+        testAdress = Address.fakeAddress();
     }
 
     @Test
@@ -37,4 +35,10 @@ import org.junit.jupiter.api.Test;
     void fakeAddress_NonNull_Country_Test() {
         Assertions.assertNotNull(testAdress.getCountry());
     }
+
+    @Test
+    void fakeData_Address_Amount_Test() {
+        Assertions.assertEquals(5, Address.fakeAddresses(5).size());
+    }
+
 }

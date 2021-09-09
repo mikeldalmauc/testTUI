@@ -77,3 +77,11 @@ https://snyk.io/blog/best-practices-to-build-java-containers-with-docker/
 
 `docker build -t prueba-tui .`
 `docker run -p 9000:9000 prueba-tui --server.port=9000`
+
+
+
+By default, acivemq broker url is tcp://localhost:61616. The admin console url is http://localhost:8161/admin/ with userId and password as admin and admin.
+
+docker run -p 6161:61616 -p 8161:8161 buluma/activemq -D"org.apache.activemq.SERIALIZABLE_PACKAGES='*'"
+
+mvn clean verify sonar:sonar -D"sonar.projectKey=pruebaTUI" -D"sonar.host.url=http://62.99.26.193:9000" -D"sonar.login=6a59b0f5237de142bf65109fc3ade1fd9bf42ef6"

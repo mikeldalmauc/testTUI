@@ -1,14 +1,19 @@
 package com.tui.proof.ws;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
+import com.tui.proof.dto.ClientDto;
+import com.tui.proof.dto.DtoMapper;
 import com.tui.proof.dto.PurchaseOrderDto;
-import com.tui.proof.service.OrderNumberService;
+import com.tui.proof.service.PurchaseOrderService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,42 +29,53 @@ import lombok.extern.log4j.Log4j2;
 public class PurchaseOrderController {
 
   @Autowired
-  KafkaTemplate<String, String> kafkaTemplate;
-
-  @Autowired
-  OrderNumberService orderNumberService;
-
-  @Value(value = "${purchaseOrderTopicName}")
-  private String purchaseOrderTopicName;
+  private PurchaseOrderService purchaseOrderService;
 
   @GetMapping("/")
   public ResponseEntity<String> hello() {
-    return ResponseEntity.ok("Hello, Im Miquel Montoro and you can order pilotes in this service.");
+    return ResponseEntity.ok("Hello, Im Miquel Montoro and you can order pilotes in this service.\n"
+        + "You can find more info about the service at : ");
   }
 
   @PostMapping("/create")
   @ResponseBody
-  public ResponseEntity<PurchaseOrderDto> createPurchaseOrder(@Valid @RequestBody PurchaseOrderDto purchaseOrder) {
-    log.info("Creating");
+  public ResponseEntity<PurchaseOrderDto> create(@Valid @RequestBody PurchaseOrderDto purchaseOrderDto) {
+    log.info("create purchaseOrder {}", purchaseOrderDto);
 
-    // Save or update Client
-    purchaseOrder.getClient().setId(122323L);
-
-    // Save or update Address
-    purchaseOrder.getDeliveryAddress().setId(122323L);
-
-    // Set order number and queue the order
-    purchaseOrder.setNumber(orderNumberService.createOrderNumber());
-    // kafkaTemplate.send(purchaseOrderTopicName, purchaseOrder.getNumber());
-
-    return ResponseEntity.ok(purchaseOrder);
+    return ResponseEntity.ok(
+      DtoMapper.convertToDto(
+        purchaseOrderService.create(
+          DtoMapper.convertToDo(purchaseOrderDto))));
   }
 
   @PostMapping("/update")
   @ResponseBody
-  public ResponseEntity<PurchaseOrderDto> updatePurchaseOrder(@Valid @RequestBody PurchaseOrderDto purchaseOrder) {
-    log.info("update");
+  public ResponseEntity<PurchaseOrderDto> update(@Valid @RequestBody PurchaseOrderDto purchaseOrderDto) {
+    log.info("update purchaseOrder {}", purchaseOrderDto);
 
-    return ResponseEntity.ok(purchaseOrder);
+    if(StringUtils.isBlank(purchaseOrderDto.getNumber())
+      || purchaseOrderDto.getId() != null){
+      return ResponseEntity.badRequest().body(purchaseOrderDto);
+    }
+
+    return ResponseEntity.ok(
+      DtoMapper.convertToDto(
+        purchaseOrderService.update(
+          DtoMapper.convertToDo(purchaseOrderDto))));
+    
   }
+
+  @RolesAllowed("ADMIN")
+  @ResponseBody
+  @GetMapping("/search")
+  public ResponseEntity<List<PurchaseOrderDto>> search(@RequestBody ClientDto clientDto) {
+    log.info("search purchase orders of client {}", clientDto);
+
+    return ResponseEntity.ok(
+      purchaseOrderService.search(
+          DtoMapper.convertToDo(clientDto)).stream()
+            .map(DtoMapper::convertToDto)
+            .collect(Collectors.toList()));
+  }
+
 }

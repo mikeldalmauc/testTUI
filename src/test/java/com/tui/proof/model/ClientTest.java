@@ -1,7 +1,5 @@
 package com.tui.proof.model;
 
-import com.github.javafaker.Faker;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -15,7 +13,7 @@ class ClientTest {
 
     @BeforeEach
     void setUp() {
-        testClient = Client.fakeClient(new Faker());
+        testClient = Client.fakeClient();
     }
 
     @Test
@@ -31,5 +29,10 @@ class ClientTest {
     @Test
     void fakeClient_NonNull_Telephone_Test() {
         Assertions.assertNotNull(testClient.getTelephone());
+    }
+
+    @Test
+    void fakeData_Clients_Amount_Test() {
+        Assertions.assertEquals(5, Client.fakeClients(5).size());
     }
 }

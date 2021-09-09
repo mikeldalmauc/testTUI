@@ -7,13 +7,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.github.javafaker.Faker;
-import com.tui.proof.repository.AddressRepository;
-import com.tui.proof.repository.ClientRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
+
 import com.tui.proof.repository.PurchaseOrderRepository;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.math3.distribution.ParetoDistribution;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.mapping.SearchMapping;
+import org.hibernate.search.mapper.orm.work.SearchWorkspace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -25,40 +29,28 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class ModelLoader implements ApplicationRunner {
 	
-	@Autowired AddressRepository addressRepo;
-	
-	@Autowired ClientRepository clientRepo;
+    public static final Integer MODEL_SIZE = 50;
 
-	@Autowired PurchaseOrderRepository poRepo;
-
-    /**
-     * 
-     * @param m 
-     * @return m clients, m addresses, a pareto distribution of orders for each client-address pair.
-     */
-    public static Triple<List<Client>, List<Address>, List<PurchaseOrder>> fakeData(int m){
-        
-        // Insert some fake data 
-	    List<Client> clients = Stream.iterate(0, n -> n + 1)
-            .map(n -> new Faker())
-            .map(Client::fakeClient)
-            .limit(m)
-            .collect(Collectors.toList());
-
-        List<Address> addresses = Stream.iterate(0, n -> n + 1)
-            .map(n -> new Faker())
-            .map(Address::fakeAddress)
-            .limit(m)
-            .collect(Collectors.toList());
+    @PersistenceUnit
+    private EntityManagerFactory entityManagerFactory;
     
+    @PersistenceContext
+    private EntityManager entityManager;
+    
+	@Autowired 
+    private PurchaseOrderRepository poRepo;
+
+    public static List<PurchaseOrder> fakePurchaseOrders(List<Client> clients, List<Address> addresses){
+
         /**
          * 1 order min
-         * α is the shape parameter: this is the Pareto index
-         * view https://anylogic.help/advanced/functions/pareto.html
+         * α = 2 is the shape parameter: this is the Pareto index
+         * a 80/20 proportion
+         * view https://en.wikipedia.org/wiki/Pareto_distribution
          */
         ParetoDistribution dist = new ParetoDistribution(1, 2);
 
-        List<PurchaseOrder> purchaseOrders = Stream.iterate(0, n -> n + 1)
+        return Stream.iterate(0, n -> n + 1)
             .map(n -> {
                 int numberOfOrders = (int) floor(dist.sample());
                 return Stream.iterate(0, i -> i + 1)
@@ -66,29 +58,24 @@ public class ModelLoader implements ApplicationRunner {
                     .fakePurchaseOrder(clients.get(n), addresses.get(n)))
                     .limit(numberOfOrders);
             })
-            .limit(m)
+            .limit(clients.size())
             .flatMap(Function.identity())
             .collect(Collectors.toList());
-
-            return Triple.of(clients, addresses, purchaseOrders);
     }
-
 
     public void run(ApplicationArguments args) {
 
-                 
-        Triple<List<Client>, List<Address>, List<PurchaseOrder>> data = fakeData(200);
+        // Indexes are cleared before saving all data.
+        SearchMapping searchMapping = Search.mapping(entityManagerFactory); 
+		SearchWorkspace allEntitiesWorkspace = searchMapping.scope( Object.class ).workspace();         
+        allEntitiesWorkspace.purge();
 
-        clientRepo.saveAll(data.getLeft());
-        log.info(data.getLeft().size() + " clients created");
+        List<PurchaseOrder> pos = fakePurchaseOrders(Client.fakeClients(MODEL_SIZE), Address.fakeAddresses(MODEL_SIZE));
+        poRepo.saveAll(pos);
 
-        addressRepo.saveAll(data.getMiddle());
-        log.info(data.getMiddle().size() + " address created");
-
-        poRepo.saveAll(data.getRight());
-        log.info(data.getRight().size() + " purchase orders created");
+        log.info(pos.size() + " fake purchase orders created");
+        log.info(MODEL_SIZE + " fake address created");
+        log.info(MODEL_SIZE + " fake purchase orders created");
     }
 
-    
-    
 }
