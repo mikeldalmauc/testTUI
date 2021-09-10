@@ -183,7 +183,7 @@ spring.activemq.schedulerSupport=true
 
 ##### Sonar Qube
 
-To run SonarQube analisis on a server, this can be done locally with docker or remote. Access the latest analisis at  http://sonarpruebatui.ddns.net:9000
+To run SonarQube analisis on a server, this can be done locally with docker or remote. Access the latest analisis at  http://sonarpruebatui.ddns.net:9000 with auth admin/ADMIN1.
 
 ```sh
 docker pull sonarqube:9.0.1-developer
