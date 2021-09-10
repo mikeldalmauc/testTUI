@@ -8,6 +8,7 @@ FROM openjdk:18-ea-11-jdk-alpine3.13@sha256:d2b58158c7c5b57707465ff02adc14de2023
 RUN apk add dumb-init
 RUN mkdir /app
 RUN addgroup --system javauser && adduser -S -s /bin/false -G javauser javauser
+RUN chown -R javauser:javauser /var
 COPY --from=build /project/target/backend-technical-test-2.0.0-SNAPSHOT-spring-boot.jar /app/java-application.jar
 WORKDIR /app
 RUN chown -R javauser:javauser /app

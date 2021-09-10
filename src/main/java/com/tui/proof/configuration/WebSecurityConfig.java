@@ -16,9 +16,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Note CSRF is disabled here, this should be removed, but doing it
-        // makes visual studio crash on testing PurchaseOrderController
-        http.csrf().disable().authorizeRequests()
+        
+        http
+        .csrf().disable()
+        .authorizeRequests()
             .antMatchers("/orders/search").hasRole(ROLE_ADMIN)
             .and().httpBasic()
             .and().authorizeRequests()
@@ -39,5 +40,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .ignoring()
             .antMatchers("/h2-console/**");
     }
-
 }

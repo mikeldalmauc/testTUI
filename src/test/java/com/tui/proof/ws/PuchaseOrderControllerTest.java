@@ -67,18 +67,8 @@ class PuchaseOrderControllerTest {
     @BeforeEach
     void setup() {
 
-        addressDto = AddressDto.builder()
-            .city("bilbao")
-            .street("street 2")
-            .postCode("48960")
-            .country("Spain").build();
-
-        clientDto = ClientDto.builder()
-            .firstName("Jhon")
-            .lastName("Joe")
-            .telephone("+34666777888")
-            .email("m@gmail.com").build();
-
+        addressDto = AddressDto.fakeAddress();
+        clientDto = ClientDto.fakeClient();
         testPODto = PurchaseOrderDto.builder()
             .pilotes(5)
             .pricePerPilote(1.06)

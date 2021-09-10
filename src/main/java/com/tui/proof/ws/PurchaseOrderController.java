@@ -1,11 +1,14 @@
 package com.tui.proof.ws;
 
+import static com.tui.proof.dto.DtoMapper.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tui.proof.dto.ClientDto;
 import com.tui.proof.dto.DtoMapper;
 import com.tui.proof.dto.PurchaseOrderDto;
@@ -29,6 +32,9 @@ import lombok.extern.log4j.Log4j2;
 public class PurchaseOrderController {
 
   @Autowired
+  ObjectMapper mapper;
+  
+  @Autowired
   private PurchaseOrderService purchaseOrderService;
 
   @GetMapping("/")
@@ -41,11 +47,10 @@ public class PurchaseOrderController {
   @ResponseBody
   public ResponseEntity<PurchaseOrderDto> create(@Valid @RequestBody PurchaseOrderDto purchaseOrderDto) {
     log.info("create purchaseOrder {}", purchaseOrderDto);
-
-    return ResponseEntity.ok(
-      DtoMapper.convertToDto(
+    
+    return ResponseEntity.ok(toDto(
         purchaseOrderService.create(
-          DtoMapper.convertToDo(purchaseOrderDto))));
+          toDo(purchaseOrderDto))));
   }
 
   @PostMapping("/update")
@@ -59,9 +64,9 @@ public class PurchaseOrderController {
     }
 
     return ResponseEntity.ok(
-      DtoMapper.convertToDto(
+      toDto(
         purchaseOrderService.update(
-          DtoMapper.convertToDo(purchaseOrderDto))));
+          toDo(purchaseOrderDto))));
     
   }
 
@@ -73,8 +78,8 @@ public class PurchaseOrderController {
 
     return ResponseEntity.ok(
       purchaseOrderService.search(
-          DtoMapper.convertToDo(clientDto)).stream()
-            .map(DtoMapper::convertToDto)
+          toDo(clientDto)).stream()
+            .map(DtoMapper::toDto)
             .collect(Collectors.toList()));
   }
 

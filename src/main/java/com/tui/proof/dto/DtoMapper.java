@@ -10,7 +10,7 @@ public class DtoMapper {
         throw new IllegalStateException("Utility class");
     }
 
-    public static Client convertToDo(ClientDto dto){
+    public static Client toDo(ClientDto dto){
         
         return Client.builder()
             .id(dto.getId())
@@ -21,7 +21,7 @@ public class DtoMapper {
             .build();
     }
 
-    public static ClientDto convertToDto(Client entity){
+    public static ClientDto toDto(Client entity){
         
         return ClientDto.builder()
             .id(entity.getId())
@@ -32,7 +32,7 @@ public class DtoMapper {
             .build();
     }
 
-    public static Address convertToDo(AddressDto dto){
+    public static Address toDo(AddressDto dto){
 
         return Address.builder()
             .id(dto.getId())
@@ -42,7 +42,7 @@ public class DtoMapper {
             .country(dto.getCountry()).build();
     }
 
-    public static AddressDto convertToDto(Address entity){
+    public static AddressDto toDto(Address entity){
 
         return AddressDto.builder()
             .id(entity.getId())
@@ -52,7 +52,7 @@ public class DtoMapper {
             .country(entity.getCountry()).build();
     }
 
-    public static PurchaseOrder convertToDo(PurchaseOrderDto dto){
+    public static PurchaseOrder toDo(PurchaseOrderDto dto){
 
         return PurchaseOrder.builder()
             .id(dto.getId())
@@ -60,13 +60,13 @@ public class DtoMapper {
             .pilotes(dto.getPilotes())
             .pricePerPilote(dto.getPricePerPilote())
             .orderTotal(dto.getOrderTotal())
-            .deliveryAddress(convertToDo(dto.getDeliveryAddress()))
-            .client(convertToDo(dto.getClient()))
+            .deliveryAddress(toDo(dto.getDeliveryAddress()))
+            .client(toDo(dto.getClient()))
             .build();
 
     }
 
-    public static PurchaseOrderDto convertToDto(PurchaseOrder entity){
+    public static PurchaseOrderDto toDto(PurchaseOrder entity){
 
         return PurchaseOrderDto.builder()
             .id(entity.getId())
@@ -74,8 +74,8 @@ public class DtoMapper {
             .pilotes(entity.getPilotes())
             .pricePerPilote(entity.getPricePerPilote())
             .orderTotal(entity.getOrderTotal())
-            .deliveryAddress(convertToDto(entity.getDeliveryAddress()))
-            .client(convertToDto(entity.getClient()))
+            .deliveryAddress(toDto(entity.getDeliveryAddress()))
+            .client(toDto(entity.getClient()))
             .build();
     }
 

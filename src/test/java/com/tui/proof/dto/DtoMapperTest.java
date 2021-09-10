@@ -53,25 +53,25 @@ class DtoMapperTest {
 
     @Test
     void converToDo_client_Test(){
-        Client client = DtoMapper.convertToDo(clientDto);
+        Client client = DtoMapper.toDo(clientDto);
         assertDoEquals(clientDto, client);
     }
     
     @Test
     void converToDto_client_Test(){
-        ClientDto clientDto = DtoMapper.convertToDto(client);
+        ClientDto clientDto = DtoMapper.toDto(client);
         assertDtoEquals(client, clientDto);
     }
     
     @Test
     void converToDo_address_Test(){
-        Address address = DtoMapper.convertToDo(addressDto);
+        Address address = DtoMapper.toDo(addressDto);
         assertDoEquals(addressDto, address);
     }
     
     @Test
     void converToDto_address_Test(){
-        AddressDto addressDto = DtoMapper.convertToDto(address);
+        AddressDto addressDto = DtoMapper.toDto(address);
         assertDtoEquals(address, addressDto);
     }
     
@@ -79,7 +79,7 @@ class DtoMapperTest {
     @Test
     void converToDo_purchaseOrder_Test(){
 
-        PurchaseOrder po = DtoMapper.convertToDo(poDto);
+        PurchaseOrder po = DtoMapper.toDo(poDto);
         assertEquals(poDto.getId(), po.getId());
         assertEquals(poDto.getNumber(), po.getNumber());
         assertEquals(poDto.getPilotes(), po.getPilotes());
@@ -93,7 +93,7 @@ class DtoMapperTest {
     @Test
     void converToDto_purchaseOrder_Test(){
 
-        PurchaseOrderDto poDto = DtoMapper.convertToDto(po);
+        PurchaseOrderDto poDto = DtoMapper.toDto(po);
         assertEquals(po.getId(), poDto.getId());
         assertEquals(po.getNumber(), poDto.getNumber());
         assertEquals(po.getPilotes(), poDto.getPilotes());
