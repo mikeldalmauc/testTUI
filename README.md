@@ -35,14 +35,14 @@
   <p align="center">
     TUI DX Backend technical Test v2
     <br />
-    <a href="https://gitlab.com/mikeldalmauc"><strong>Explore the docs »</strong></a>
+    <a href="https://gitlab.com/mikeldalmauc/testTUI"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://gitlab.com/mikeldalmauc">View Demo</a>
+    <a href="https://gitlab.com/mikeldalmauc/testTUI">View Demo</a>
     ·
-    <a href="https://gitlab.com/mikeldalmauc">Report Bug</a>
+    <a href="https://gitlab.com/mikeldalmauc/testTUI">Report Bug</a>
     ·
-    <a href="https://gitlab.com/mikeldalmauc">Request Feature</a>
+    <a href="https://gitlab.com/mikeldalmauc/testTUI">Request Feature</a>
   </p>
 </p>
 
