@@ -19,7 +19,6 @@
 		<spring-data-jpa.version>2.5.4</spring-data-jpa.version>
 		<sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
 		<fully.qualified.main.class>com.tui.proof.MainApplication</fully.qualified.main.class>
-		<!-- JaCoCo Properties -->
 		<jacoco.version>0.8.7</jacoco.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>

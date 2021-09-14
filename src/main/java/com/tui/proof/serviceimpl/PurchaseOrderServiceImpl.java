@@ -1,7 +1,7 @@
 package com.tui.proof.serviceimpl;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.UUID;
 
 import javax.jms.TextMessage;
 
@@ -57,19 +57,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return poRepo.findByClient(clientRepo.searchByClientData(client));
     }
 
-    private String createOrderNumber(){
-             // This is the next value to the max of the database and the staged.
-        return (Stream.concat(
-            Stream.of(poRepo.maxOrderNumber()), // max of the database
-            stage.getOrdersOnStage().keySet().stream())
-                .map(Long::parseLong)
-                .reduce(0L , (max, actual) -> max > actual ? max : actual)
-                + 1) + "";
-    }
-
     public PurchaseOrder create(PurchaseOrder po){
 
-        po.setNumber(""+createOrderNumber());
+        po.setNumber(UUID.randomUUID().toString());
 
         // Put new order on stage
         stage.getOrdersOnStage().put(po.getNumber(), po);
@@ -87,7 +77,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         if(oldPo != null){
             // Save again
             String newOrderNumber = create(po).getNumber();
-            // Remove old po from queue
+            // Remove old po from stage
             stage.getOrdersOnStage().remove(oldNumber);
             // Update order number to returning po object
             po.setNumber(newOrderNumber);
@@ -125,7 +115,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     /**
      * 
-     * @param po
+     * @param orderNumber
      * @return
      */
     private String queueOrderNumber(String orderNumber){
@@ -143,8 +133,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     /**
-     * Message delivery is delayed
-     * @param purchaseOrder
+     * 
+     * @param payload
      */
     @JmsListener(destination = "${tui.activemq.orders.queue}")
     public void receiveMessage(String payload) {     
@@ -160,13 +150,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
             log.info("Sending order to kitchen!\n" + poToKitchen.getPilotes() + " pilotes for " + poToKitchen.getClient().getFirstName());
         }else{
-            log.info("Order lost:" + payload);
+            log.error("Order lost:" + payload);
         }
     }
 
-        /**
-     * Message delivery is delayed
-     * @param purchaseOrder
+    /**
+     * 
+     * @param payload
      */
     @JmsListener(destination = "${tui.activemq.kitchen.queue}")
     public void kitchenReceiveMessage(String payload) {     

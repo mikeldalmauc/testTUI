@@ -3,6 +3,7 @@ package com.tui.proof.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.function.IntPredicate;
 
 import javax.persistence.CascadeType;
@@ -71,7 +72,7 @@ public class PurchaseOrder implements Serializable {
     int pilotes = Integer.parseInt(fakeValuesService.regexify("5|10|15"));
 
     return PurchaseOrder.builder()
-       .number(fakeValuesService.regexify(ORDER_NUMBER_FORMAT))
+       .number(UUID.randomUUID().toString())
        .pilotes(pilotes)
        .pricePerPilote(DEFAULT_PRICE)
        .orderTotal(pilotes*DEFAULT_PRICE)

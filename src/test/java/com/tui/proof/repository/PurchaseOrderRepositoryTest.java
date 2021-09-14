@@ -1,6 +1,5 @@
 package com.tui.proof.repository;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,20 +41,6 @@ class PurchaseOrderRepositoryTest {
             pOrderRepository.save(PurchaseOrder.fakePurchaseOrder(Client.fakeClient(), Address.fakeAddress()));
         });
     
-    }
-
-    @Test()
-    void maxOrderNumber_Test() {
-
-        Long max = 0L;
-        Iterator<PurchaseOrder> pos = pOrderRepository.findAll().iterator();
-        while (pos.hasNext()){
-            Long number = Long.parseLong(pos.next().getNumber());
-            if(max < number)
-                max = number;
-        }
-
-        Assertions.assertEquals(max + "",  pOrderRepository.maxOrderNumber());
     }
 
     @Test

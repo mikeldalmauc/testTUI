@@ -35,7 +35,11 @@ public class ClientDto {
 
     public static ClientDto fakeClient() {
         Faker faker = new Faker();
-        return ClientDto.builder().firstName(faker.name().firstName()).lastName(faker.name().lastName())
-            .telephone(faker.phoneNumber().cellPhone()).email(faker.internet().emailAddress()).build();
+        return ClientDto.builder()
+            .firstName(faker.name().firstName())
+            .lastName(faker.name().lastName())
+            .telephone(faker.phoneNumber().cellPhone())
+            .email(faker.internet().emailAddress())
+            .build();
       }
 }

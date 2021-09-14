@@ -72,6 +72,7 @@
     <li><a href="#API">API</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#discussion">Discussion</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -173,7 +174,7 @@ hibernate.search.backend.type=lucene
 
 
 ##### ActiveMQ
-The service uses the ActiveMQ broker in embedded mode to send and receive messages from queues, update datasource as required at application.properties. If an standalone or remote broker is used this must support scheduling.
+The service uses the ActiveMQ broker in embedded mode to send and receive messages from queues. Integration with Udate datasource as required at application.properties.. If an standalone or remote broker is used this must support scheduling for the application to work properly.
 
 ```sh
 spring.activemq.in-memory=true
@@ -183,7 +184,7 @@ spring.activemq.schedulerSupport=true
 
 ##### Sonar Qube
 
-To run SonarQube analisis on a server, this can be done locally with docker or remote. Access the latest analisis at  http://sonarpruebatui.ddns.net:9000 with auth admin/ADMIN1.
+To run SonarQube analisis on a server, this can be done locally with docker or remotely. Access the latest analisis at  http://sonarpruebatui.ddns.net:9000 with auth admin/ADMIN1.
 
 ```sh
 docker pull sonarqube:9.0.1-developer
@@ -223,9 +224,9 @@ The service exposes the following endpoints:
 
 - <b>/orders</b>
   - <b>/</b> &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Greets the user for using our service.
-  - <b>create</b>&nbsp;&nbsp;: Create an order.
-  - <b>update</b>&nbsp;: Updates an order (within 5 minutes after creation)
-  - <b>search</b>&nbsp;: Searchs orders given customer data. Requires authentication and admin level authorization.
+  - <b>/create</b>&nbsp;&nbsp;: Create an order.
+  - <b>/update</b>&nbsp;: Updates an order (within 5 minutes after creation)
+  - <b>/search</b>&nbsp;: Searchs orders given customer data. Requires authentication and admin level authorization.
 
 Swagger V2 documentation can be accessed in Json format at
 
@@ -353,7 +354,11 @@ Contributions are what make the open source community such an amazing place to l
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Discussion
 
+As most sowtare projects alive, this should be expected to grow. One of the main carateristic it should have is evolvabilty (1) and this has motivated many of the decisions made in the project. For example, investing more time on the setup of a CI pipeline and a good testing to provide good data usable on the fitness functions that should guide evolutionary change.
+
+Another example, the project is organized by technical layers, this means domain is spread along the layers making domain changes expensive. If the domain is intended to change a lot,  this technical layers should dissapear in order to maintain a good evolvavility (1). But for a starter point, and withouth a clear technical path for the project, having technical concerse separate by layers should help.
 
 <!-- LICENSE -->
 ## License
@@ -369,6 +374,9 @@ Mikel Dalmau - mikeldalmauc@gmail.com
 Project Link: [https://gitlab.com/mikeldalmauc/testTUI.git](https://gitlab.com/mikeldalmauc/testTUI.git)
 
 
+## References
+
+1. FORD, Neal; PARSONS, Rebecca; KUA, Patrick. Building evolutionary architectures: support constant change. " O'Reilly Media, Inc.", 2017.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

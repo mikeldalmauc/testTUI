@@ -51,7 +51,6 @@ class PurchaseOrderServiceIntegrationTest {
             Assertions.assertFalse(stage.getOrdersOnStage().containsKey(result.getNumber()));
             Assertions.assertNotNull(pOrderRepository.findByNumber(result.getNumber()));
         });
-
     }
 
     @Test

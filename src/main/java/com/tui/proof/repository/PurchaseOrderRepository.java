@@ -12,9 +12,6 @@ public interface PurchaseOrderRepository extends CrudRepository<PurchaseOrder, L
     @Query
     public PurchaseOrder findByNumber(String number);
 
-    @Query(value = "select max(number) from Purchase_Order", nativeQuery=true)
-    public String maxOrderNumber();
-
     @Query(value = "SELECT po FROM PurchaseOrder po WHERE po.client IN (:clients)")
     public List<PurchaseOrder> findByClient(List<Client> clients);
 }
